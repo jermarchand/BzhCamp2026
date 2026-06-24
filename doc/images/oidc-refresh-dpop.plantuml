@@ -1,0 +1,17 @@
+@startuml
+
+hide footbox
+
+Participant "Application" as RelyingParty
+Participant "OpenId Provider" as OpenIdProvider
+
+' -------------------
+' Refresh
+
+
+RelyingParty -> OpenIdProvider: \n""POST /token & <font color=blue>refresh=XXXXXX</font> & <font color=green>client_id=myapp</font>""\n""<font color=violet>dpop: SSSSSSSSSSSS</font>"" 
+OpenIdProvider -> OpenIdProvider: Check DPOP
+OpenIdProvider -> OpenIdProvider: Add thumbprint
+OpenIdProvider --> RelyingParty: ""<&file>id_token""\n""<&file>access_token""\n""<&file>refresh_token""
+
+@enduml

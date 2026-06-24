@@ -1,0 +1,44 @@
+@startuml
+
+hide footbox
+
+Participant "Browser" as Browser
+Participant "Application" as RelyingParty
+Participant "OpenId Provider" as OpenIdProvider
+
+' -------------------
+' Auth
+
+Browser -> RelyingParty: ""GET /login""
+note right of RelyingParty
+    codeVerifier = randomString();
+    codeChallenge = base64url.encode(sha256(codeVerifier));
+end note
+RelyingParty --> Browser: 302 redirect to auth
+
+Browser -> OpenIdProvider: \n\n\n""GET /auth? <font color=green>client_id=myapp</font> & <font color=orange>redirect_uri=https://myapp</font> & <font color=red>code_challenge=ZZZZZZ</font> ...""
+activate OpenIdProvider
+OpenIdProvider -> OpenIdProvider: Strict check of <font color=orange>redirect_uri</font>
+Browser <--> OpenIdProvider: \t\t\t\t\tCredentials / 2FA / Passkey / SSO / ...
+OpenIdProvider --> Browser: \n\n302 to ""<font color=orange>redirect_uri</font>"" with ""<font color=blue>code=XXXXXX</font>""
+deactivate
+
+Browser -> RelyingParty:
+
+...
+' -------------------
+' Token 
+...
+
+RelyingParty -> OpenIdProvider: ""POST /token & <font color=blue>code=XXXXXX</font> & <font color=green>client_id=myapp</font> & <font color=red>code_verifier=YYYYYY</font>""
+note over OpenIdProvider
+    codeChallenge = base64url.encode(sha256(code_verifier));
+
+    Compare both ""codeChallenge""
+end note
+
+OpenIdProvider --> RelyingParty: \n\n""<&file>id_token""\n""<&file>access_token""\n""<&file>refresh_token""
+
+RelyingParty --> Browser: 
+
+@enduml

@@ -1,0 +1,23 @@
+@startuml
+
+hide footbox
+
+Participant "Browser" as Browser
+Participant "Public Application" as RelyingParty
+Participant "API" as API
+
+' -------------------
+' Use
+
+Browser -> RelyingParty
+
+RelyingParty -> API: ""GET /something""\n""<font color=violet>dpop: TTTTTTTTTT</font>"" \n""Authorization: <font color=red>DPoP</font> <font color=blue>access_token</font>""
+
+activate API
+API -> API: Check DPOP & thumbprint
+API --> RelyingParty: Response
+deactivate API
+
+RelyingParty --> Browser
+
+@enduml

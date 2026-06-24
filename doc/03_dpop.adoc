@@ -1,0 +1,44 @@
+= DPOP
+
+* https://datatracker.ietf.org/doc/html/rfc9449[RFC 9449 : OAuth 2.0 Demonstrating Proof of Possession (DPoP)]
+
+[quote]
+--
+This document describes a mechanism for sender-constraining OAuth 2.0 tokens via a proof-of-possession mechanism on the application level. 
+This mechanism allows for the detection of replay attacks with access and refresh tokens.
+--
+
+[.notes]
+--
+2023
+
+https://github.com/hakdogan/quarkus-dpop-example/tree/main
+--
+
+== Authentification *AVEC* PKCE & DPOP
+
+[plantuml, target=oidc-pkce-dpop-1, format=svg, width=1200px]
+....
+include::images/oidc-pkce-dpop.plantuml[lines="1..9,10..28,47"]
+....
+
+== Token *AVEC* PKCE & DPOP
+
+[plantuml, target=oidc-pkce-dpop-2, format=svg, width=1200px]
+....
+include::images/oidc-pkce-dpop.plantuml[lines="1..9,29..47"] 
+....
+
+== Access_token *AVEC* DPOP
+
+[plantuml, target=oidc-usage-dpop, format=svg, width=1200px]
+....
+include::images/oidc-usage-dpop.plantuml[] 
+....
+
+== Refresh_token *AVEC* DPOP
+
+[plantuml, target=oidc-refresh-dpop, format=svg, width=1200px]
+....
+include::images/oidc-refresh-dpop.plantuml[] 
+....

@@ -1,0 +1,47 @@
+= OAuth2.1
+
+* https://datatracker.ietf.org/doc/html/rfc9700[RFC 9700 - The OAuth 2.0 Authorization Framework]
+* https://datatracker.ietf.org/doc/html/draft-ietf-oauth-v2-1-15[draft-ietf-oauth-v2-1-15]
+[%step]
+** 🚫 *Interdiction* des flow : `implicit` et `password`
+** 🛡️ Généralisation de PKCE (pour *TOUS*)
+** 🛡️ Validation stricte des URI de redirection
+** 🔄 Les Access Tokens doivent avoir une durée de vie courte.
+** 🎯 Authentification forte des clients confidentiels
+** 🎯 Protection des jetons et défenses contre le rejeu
+
+[.notes]
+--
+La **RFC 9700**, publiée en janvier 2025 sous le titre *"Best Current Practice for OAuth 2.0 Security"*, est l'un des documents les plus importants de l'écosystème OAuth de ces dernières années.
+
+Plutôt que de créer un nouveau protocole, cette RFC **compile, met à jour et durcit** toutes les règles de sécurité d'OAuth 2.0 accumulées sur une décennie. 
+
+Dernière version du draft est de Mars 2026, et propose l'application des recommendations de la RFC 9700 
+
+📝 **En résumé :** Si vous devez retenir une seule règle de la RFC 9700 pour vos futurs développements, c'est **"Utilisez le flux *Authorization Code* avec PKCE, bannissez l'Implicit/ROPC et validez de manière ultra-stricte vos URLs de redirection."**
+--
+
+== Token *SANS* PKCE
+
+[plantuml, target=oidc-auth-2, format=svg, width=1200px]
+....
+include::images/oidc-auth.plantuml[lines="1..8,25..37,38"]
+....
+
+
+== Authentification *AVEC* PKCE
+
+[plantuml, target=oidc-pkce-1, format=svg, width=1200px]
+....
+include::images/oidc-pkce.plantuml[lines="1..8,9..28,44"]
+....
+
+== Token *AVEC* PKCE
+
+[plantuml, target=oidc-pkce-2, format=svg, width=1200px]
+....
+include::images/oidc-pkce.plantuml[lines="1..8,29..43,44"] 
+....
+
+== Demo
+

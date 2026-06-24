@@ -1,0 +1,59 @@
+[.columns]
+= Une impression de "déjà-vu"
+
+[.column]
+image::oauth2.png[height=150px]
+
+[.column]
+image::openid.png[height=150px]
+
+== OAuth2
+
+* 🔐 https://datatracker.ietf.org/doc/html/rfc6749[RFC 6749 - The OAuth 2.0 Authorization Framework]
+*** `authorization_code`
+*** `implicit`
+*** `password`
+*** `client_credentials`
+* 🔐 https://datatracker.ietf.org/doc/html/rfc6750[RFC 6750 - The OAuth 2.0 Authorization Framework: Bearer Token Usage]
+* ⚙️ https://datatracker.ietf.org/doc/html/rfc7519[RFC 7519 - JSON Web Token (JWT)]
+* 🛡️ https://datatracker.ietf.org/doc/html/rfc7636[RFC 7636 - Proof Key for Code Exchange (PKCE)]
+
+[.notes]
+--
+L'écosystème OAuth 2.0 ne se limite pas à un seul document.
+
+2012 OAuth 2.0
+2015 JWT
+2015 PKCE
+--
+
+== OpenId Connect 
+
+* https://openid.net/specs/openid-connect-core-1_0.html[OpenID Connect Core 1.0]
+** `code`
+** `id_token`
+** `implicit`
+* https://openid.net/specs/openid-connect-discovery-1_0.html[OpenID Connect Discovery 1.0]
+* https://openid.net/specs/openid-connect-session-1_0.html[OpenID Connect Session Management 1.0]
+* https://openid.net/specs/openid-connect-backchannel-1_0.html[OpenID Connect Back-Channel Logout 1.0]
+* https://openid.net/specs/openid-connect-frontchannel-1_0.html[OpenID Connect Front-Channel Logout 1.0]
+
+[.notes]
+--
+2014 OIDC & discovery
+2017 SLO
+--
+
+== Authentification
+
+[plantuml, target=oidc-auth-1, format=svg, width=1200px]
+....
+include::images/oidc-auth.plantuml[lines="1..8,9..24,38"]
+....
+
+== Tokens
+
+[plantuml, target=oidc-auth-2, format=svg, width=1200px]
+....
+include::images/oidc-auth.plantuml[lines="1..8,25..37,38"]
+....

@@ -1,0 +1,45 @@
+= Ne t'en fais pas pour le vase.
+
+[quote]
+--
+Oh, et ce qui va vraiment te torturer l'esprit plus tard, c'est de te demander : est-ce que tu l'aurais cassé si je ne t'avais rien dit ?
+--
+
+== Access_token
+
+[plantuml, target=oidc-usage, format=svg, width=1200px]
+....
+include::images/oidc-usage.plantuml[] 
+....
+
+== Refresh_token
+
+[plantuml, target=oidc-reresh, format=svg, width=1200px]
+....
+include::images/oidc-refresh.plantuml[] 
+....
+
+
+== Demo
+
+[source]
+----
+export BASE_URL=https://keycloak.zenika.lan
+export CLIENT_ID=myapp1
+export REALM=bzhcamp
+
+REFRESH_TOKEN="eyJhbGciOiJIUzUxMiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJiZTQ4MmE5Yi1mZWU0LTQ1Y2EtYjcxYi01ODlkYTI4YjUxYWIifQ.eyJleHAiOjE3ODIwNTE5NjYsImlhdCI6MTc4MjA1MDE2NiwianRpIjoiZjBlZWZiNTctOWRiYS0wNTAzLTAxNTktYjUyYjI3Y2EyNjE2IiwiaXNzIjoiaHR0cHM6Ly9rZXljbG9hay56ZW5pa2EubGFuL3JlYWxtcy9iemhjYW1wIiwiYXVkIjoiaHR0cHM6Ly9rZXljbG9hay56ZW5pa2EubGFuL3JlYWxtcy9iemhjYW1wIiwic3ViIjoiZTU0ZmY0MDYtZDAyMS00OTMxLTk0NjItYjRlYzQ3YTg3Mjc4IiwidHlwIjoiUmVmcmVzaCIsImF6cCI6Im15YXBwMSIsInNpZCI6ImRYc0piMkdwcHZ2dUNzSTk3T1B1WGtrQiIsInNjb3BlIjoib3BlbmlkIHByb2ZpbGUgYWNyIGVtYWlsIHdlYi1vcmlnaW5zIHJvbGVzIGJhc2ljIiwicmV1c2VfaWQiOiJmODE4YzE4Yi1iZmM3LTRkZjUtYTY0Ny0yYTQ5OWFiMWVhNzUifQ.tUONN7hQJ9spM00azTV6j2Lr62XUcJFdN7KtJxjLZh_DaYlfj3Iid_m1veBGqZ_QW0DfAE5FvmM7I_UxlxUgmw"
+
+curl -d "client_id=$CLIENT_ID" \
+     -d "grant_type=refresh_token" \
+     -d "refresh_token=$REFRESH_TOKEN" \
+     "$BASE_URL/realms/$REALM/protocol/openid-connect/token" | jq
+----
+
+== Replay
+
+[%step]
+* Limiter la durée de vie des `access_token`
+* Limiter la portée `access_token` (`audience` & `roles`)
+* Limiter le contenu des `access_token` (`scopes`)
+* Il faut interdir la réutilisation des `refresh_token`

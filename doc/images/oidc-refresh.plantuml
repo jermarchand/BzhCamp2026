@@ -1,0 +1,16 @@
+@startuml
+
+hide footbox
+
+Participant "Public Application" as RelyingParty
+Participant "OpenId Provider" as OpenIdProvider
+
+' -------------------
+' Refresh
+
+
+RelyingParty -> OpenIdProvider: \n""POST /token & <font color=blue>refresh=XXXXXX</font> & <font color=green>client_id=myapp</font>""
+
+OpenIdProvider --> RelyingParty: \n\n""<&file>id_token""\n""<&file>access_token""\n""<&file>refresh_token""
+
+@enduml

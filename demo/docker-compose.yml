@@ -1,0 +1,105 @@
+services:
+
+  keycloak:
+    build: .
+    entrypoint: /opt/keycloak/bin/kc.sh start --optimized --import-realm --spi-theme--static-max-age=-1 --spi-theme--cache-themes=false --spi-theme--cache-templates=false
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+      
+      KC_HTTP_ENABLED: true
+      # KC_PROXY: edge
+      KC_PROXY_HEADERS: xforwarded
+      KC_HOSTNAME_DEBUG: true
+      KC_HOSTNAME: keycloak.${DOCKER_BASE_URL}
+
+      KC_DB_URL: jdbc:postgresql://postgres/keycloak
+      KC_DB_USERNAME: keycloak
+      KC_DB_PASSWORD: password
+      
+      KC_LOG_LEVEL: info,org.keycloak.events:debug
+      KC_LOG_CONSOLE_COLOR: true
+    networks:
+      - web
+    ports:
+      - "8080:8080"
+    deploy:
+      replicas: 1
+      endpoint_mode: dnsrr
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost:9000/health || exit 1"]
+      interval: 10s
+      retries: 5
+      start_period: 10s
+      timeout: 2s
+    volumes:
+      - ./realm-export.json:/opt/keycloak/data/import/realm-export.json
+      - ./themes/bzhcamp/:/opt/keycloak/themes/bzhcamp/
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${DOCKER_NAME}_keycloak-http.entrypoints=web"
+      - "traefik.http.routers.${DOCKER_NAME}_keycloak-http.rule=Host(`keycloak.${DOCKER_BASE_URL}`)"
+      - "traefik.http.routers.${DOCKER_NAME}_keycloak-http.middlewares=${DOCKER_NAME}_keycloak-https"
+      - "traefik.http.middlewares.${DOCKER_NAME}_keycloak-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.${DOCKER_NAME}_keycloak.entrypoints=websecure"
+      - "traefik.http.routers.${DOCKER_NAME}_keycloak.rule=Host(`keycloak.${DOCKER_BASE_URL}`)"
+      - "traefik.http.routers.${DOCKER_NAME}_keycloak.tls=true"
+      - "traefik.docker.network=web"
+
+  postgres:
+    image: postgres:18.4
+    environment:
+      POSTGRES_DB: keycloak
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
+    networks:
+      - web
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U keycloak"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  myapp1:
+    image: nginx:1.31.1-alpine
+    networks:
+      - web
+    ports:
+      - 8081:80
+    volumes:
+      - ./myapp1:/usr/share/nginx/html
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${DOCKER_NAME}_myapp1-http.entrypoints=web"
+      - "traefik.http.routers.${DOCKER_NAME}_myapp1-http.rule=Host(`myapp1.${DOCKER_BASE_URL}`)"
+      - "traefik.http.routers.${DOCKER_NAME}_myapp1-http.middlewares=${DOCKER_NAME}_myapp1-https"
+      - "traefik.http.middlewares.${DOCKER_NAME}_myapp1-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.${DOCKER_NAME}_myapp1.entrypoints=websecure"
+      - "traefik.http.routers.${DOCKER_NAME}_myapp1.rule=Host(`myapp1.${DOCKER_BASE_URL}`)"
+      - "traefik.http.routers.${DOCKER_NAME}_myapp1.tls=true"
+      - "traefik.docker.network=web"
+
+  myapp2:
+    image: nginx:1.31.1-alpine
+    networks:
+      - web
+    ports:
+      - 8082:80
+    volumes:
+      - ./myapp2:/usr/share/nginx/html
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.${DOCKER_NAME}_myapp2-http.entrypoints=web"
+      - "traefik.http.routers.${DOCKER_NAME}_myapp2-http.rule=Host(`myapp2.${DOCKER_BASE_URL}`)"
+      - "traefik.http.routers.${DOCKER_NAME}_myapp2-http.middlewares=${DOCKER_NAME}_myapp2-https"
+      - "traefik.http.middlewares.${DOCKER_NAME}_myapp2-https.redirectscheme.scheme=https"
+      - "traefik.http.routers.${DOCKER_NAME}_myapp2.entrypoints=websecure"
+      - "traefik.http.routers.${DOCKER_NAME}_myapp2.rule=Host(`myapp2.${DOCKER_BASE_URL}`)"
+      - "traefik.http.routers.${DOCKER_NAME}_myapp2.tls=true"
+      - "traefik.docker.network=web"
+networks:
+  web:
+    driver: bridge

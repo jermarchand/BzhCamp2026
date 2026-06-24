@@ -1,0 +1,142 @@
+= La cuillère n'existe pas
+
+[quote]
+--
+Et là tu sauras que la seule chose qui se plie ce n’est pas la cuillère, c’est seulement ton reflet.
+--
+
+== DPoP Proof
+
+HTTP Header
+
+[source,yaml]
+--
+dpop: eyJhbGciOiJFUzI1NiIsInR5cCI6ImRwb3Arand0IiwiandrIjp7ImNydiI6IlAtMjU2Iiwia3R5Ijo
+      iRUMiLCJ4IjoibmdvX2MxX3BSLUN2Uy1PREY2TXZjTXBISlRoZGIwS0VUc2xyNVNhS1d4NCIsInkiOi
+      JPX3VGcTBiS2tiQTFSM2hwdVRiYWQ1T19xS3NjMkJ1bzFtLXZNU2dfX3QwIn19.eyJqdGkiOiI2NjBl
+      ZmEwOS1jNzg3LTRiNTgtOGVlMS1jNWY0ZGNkNTA1ZDEiLCJodG0iOiJQT1NUIiwiaHR1IjoiaHR0cHM
+      6Ly9rZXljbG9hay56ZW5pa2EubGFuL3JlYWxtcy9iemhjYW1wL3Byb3RvY29sL29wZW5pZC1jb25uZW
+      N0L3Rva2VuIiwiaWF0IjoxNzgyMDc2NzM0fQ.zmiif463pq_Mj47dYLlELYRhCJXp2CAL8Yj3TGWXW4
+      A1gLyknv96_h2Ryi1sKSJ8ZyrdNDeebnuIoL6xh7ugGQ
+--
+
+== Key pair
+
+[source,javascript]
+--
+// Javascript example
+let keyPair = await window.crypto.subtle.generateKey(
+  { name: "ECDSA", namedCurve: "P-256" }, <1>
+  false, <2>
+  ["sign"], <3>
+);
+--
+<1> information sur l'algorithme
+<2> la clé privée ne doit jamais pouvoir être lue ou exportée en JavaScript.
+<3> Pour quelle utilisation 
+
+
+💡 https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/generateKey#browser_compatibility[browser_compatibility]
+
+
+== DPoP Proof - Header
+
+[source, json]
+--
+{
+  "alg": "ES256", <1>
+  "typ": "dpop+jwt", <2>
+  "jwk": { <3>
+    "crv": "P-256",
+    "kty": "EC",
+    "x": "ngo_c1_pR-CvS-ODF6MvcMpHJThdb0KETslr5SaKWx4",
+    "y": "O_uFq0bKkbA1R3hpuTbad5O_qKsc2Buo1m-vMSg__t0"
+  }
+}
+--
+<1> l'algorithme
+<2> le type est toujours `dpop+jwt`
+<3> la clé publique au format JSON Web Key (https://datatracker.ietf.org/doc/html/rfc7517[RFC 7519 - JSON Web Key (JWK)])
+
+== DPoP Proof - Payload (1/2)
+[source, json]
+--
+{
+  "jti": "660efa09-c787-4b58-8ee1-c5f4dcd505d1", <1>
+  "htm": "POST", <2>
+  "htu": "https://keycloak.zenika.lan/realms/bzhcamp/protocol/openid-connect/token", <3>
+  "iat": 1782076734 <4>
+}
+--
+<1> JWT ID: identifiant unique et aléatoire (UUID) pour cette preuve.
+<2> La méthode de la requête HTTP actuelle.
+<3> L'URL absolue de la requête
+<4> Issued At : utilisée pour valider la fraicheur de la preuve.
+
+== DPoP Proof - Payload (2/2)
+[source, json]
+--
+{
+  "jti": "172d6a31-7024-4ec1-b45d-9899a3b5e298",
+  "htm": "GET",
+  "htu": "https://api.monentreprise.com/v1/me",
+  "iat": 1782245884,
+  "ath": "K9-8fS_D4Xm19J7-L9_2b8N0vM39xF5J7A29Vb1G_8M", <1>
+  "nonce": "L9x2TlKWIA-7b9e3a12" <2>
+}
+--
+<1> Access Token Hash: *obligatoire* pour appeler une API
+<2> nonce: valeur fournie par le serveur (Optionel)
+
+== DPoP Proof - Signature
+
+[source,javascript]
+--
+// Javascript example
+const signature = await crypto.subtle.sign(
+  { name: 'ECDSA', hash: 'SHA-256' }, <1>
+  privateKey, <2>
+  encodedData, <3>
+);
+--
+<1> L'algorithme
+<2> la clé privée
+<3> la concaténation du header et du payload
+
+
+💡 https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/sign#browser_compatibility[browser_compatibility]
+
+== Thumbprint
+
+* Claim dans `access_token` et `refresh_token`
+
+[source,json]
+--
+  ...
+  "cnf": { <1>
+    "jkt": "jGS9RSRROlNh5rw1RpeCkoXy5gqQ0kJfgdjJ9PWhexs" <2>
+  },
+  ...
+--
+<1> Confirmation
+<2> JSON Web Key Thumbprint
+
+== Démo
+
+== Librairies/Framework
+
+* Support par configuration
+** React/Vue (oidc-client-ts) 
+** Angular (angular-oauth2-oidc)
+** .NET (Duende.IdentityServer)
+* Implémentation Manuelle
+** Java (nimbus-oauthjs, SpringSecurity)
+** Python (joserfc / Authlib)
+** PHP (jwt-framework)
+** JavaScript (jose par panva)
+
+== DPoP vs Mutual TLS 
+
+* mTLS : très sécurisé 
+* mais lourd à déployer.
+* DPoP agit au niveau applicatif.

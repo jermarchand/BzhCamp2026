@@ -1,0 +1,50 @@
+.absolute {
+    position: fixed;
+    top: 0px;
+    right: -50px;
+}
+
+/* Force la slide à utiliser toute la hauteur et aligne le contenu en haut */
+.reveal .slides section:not(:first-child) {
+    height: 100% !important;
+
+}
+
+.reveal code {
+    font-size: 75%;
+}
+
+.smaller {
+    font-size: 75%;
+}
+
+.footer {
+    position: absolute;
+    display: table;
+    width: 100%;
+    bottom: 0;
+}
+
+.footer span {
+    display: table-cell;
+    padding: 0px 15px 5px;
+
+    text-align: center;
+    font-family: "Roboto Mono", monospace;
+    font-size: 70%;
+}
+
+.footer span:nth-of-type(1) {
+    text-align: left;
+}
+
+.footer span:nth-last-child(1) {
+    text-align: right;
+}
+
+.footerimage {
+    margin: 0 !important;
+    margin-left: 50px !important;
+    margin-right: 150px !important;
+    vertical-align: middle;
+}

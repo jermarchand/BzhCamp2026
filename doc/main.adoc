@@ -1,0 +1,83 @@
+= Agents Smith vs OAuth2 + DPoP : stopper le replay et le vol de bearer tokens
+BreizhCamp - Juin 2026 
+// :author: Jérôme Marchand
+:icons: font
+:imagesdir: images/
+:docinfo: shared
+// reveal.js config
+:customcss: css/reveal-override.css
+:revealjs_theme: white
+:revealjs_hash: true
+:revealjs_width: 1408
+:revealjs_height: 792
+:revealjs_slideNumber: true
+:revealjs_pdfSeparateFragments: false
+:revealjs_controlsBackArrows: faded
+:revealjs_defaulttiming: 60
+// Highliter
+:source-highlighter: highlight.js
+:highlightjs-theme: node_modules/highlight.js/styles/a11y-light.css
+:highlightjs-languages: javascript
+// Title
+:title-slide-background-image: zenika/motif_zenika_couleurs.png
+
+++++
+<script type="text/javascript">
+window.addEventListener("load", function() {
+  revealDiv = document.querySelector("body div.reveal")
+  footer = document.getElementById("breizhcamp-footer");
+  revealDiv.appendChild(footer);
+} );
+</script>
+<div id="breizhcamp-footer" class="footer">
+  <span class="element"><img class="footerimage" src="images/zenika/breizhcamp.png" width=250px></span>
+  <span class="element">Jérôme Marchand <img class="footerimage" src="images/zenika/Monogramme logo Zenika.svg" width=50px ></span>
+</div>
+
+++++
+
+// == Spoil
+
+// video::FXKx1sX8ESs[youtube, start=1, end=108, options="autoplay,nocontrols",width=1408px,height=792]
+
+[.columns]
+== Wake up Néo 
+
+[.column]
+image::zenika/Logo Zenika_Vertical_Noir.svg[height=200px]
+
+[.column]
+* Consultant-Formateur
+** Keycloak
+** IaC
+** DevOps
+
+[.notes]
+--
+Vous vivez dans la Matrice : un Bearer Token (access_token) vous donne l’accès à vos applications… 
+mais si un Agent Smith l’intercepte ? Game over. 
+Il a tous vos accès sans demande de mot de passe, pas de preuve de possession – vous avez donc juste une illusion de contrôle.
+
+Suivez le lapin blanc jusqu’à DPoP (Demonstration of Proof-of-Possession, RFC 9449) : vos tokens deviennent inséparables d’une clé privée. 
+Prouvez que vous êtes L’élu, ou rien.
+
+Restons au pays des merveilles, et descendons avec le lapin blanc au fond du gouffre :
+* PKCE, la première barrière contre l’interception du code d’autorisation
+* Les failles critiques des bearer tokens
+* Comment DPoP fonctionne
+* Les pièges d’implémentation dans le monde réel où les Agents se cachent encore
+
+… pour montrer qu’il est temps de sortir de l’illusion que toute la sécurité est faite avec les bearer tokens.
+--
+
+include::00_oidc.adoc[leveloffset=1]
+
+include::01_pkce.adoc[leveloffset=1]
+
+include::02_failles.adoc[leveloffset=1]
+
+include::03_dpop.adoc[leveloffset=1]
+
+include::04_comment.adoc[leveloffset=1]
+
+include::05_next.adoc[leveloffset=1]

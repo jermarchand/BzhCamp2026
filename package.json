@@ -1,0 +1,23 @@
+{
+  "name": "bzhcamp2026",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "watch": "onchange 'doc/*.adoc' -- npx asciidoctor-revealjs -r asciidoctor-kroki doc/main.adoc -o doc/index.html",
+    "play": "browser-sync start --server 'doc' --files 'doc'"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "asciidoctor": "^3.0.4",
+    "@asciidoctor/reveal.js": "^5.2.0",
+    "asciidoctor-kroki": "^0.18.1",
+    "highlight.js": "^11.9.0"
+  },
+  "devDependencies": {
+    "browser-sync": "^3.0.2",
+    "onchange": "^7.1.0"
+  }
+}

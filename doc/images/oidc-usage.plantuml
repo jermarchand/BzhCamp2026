@@ -1,0 +1,23 @@
+@startuml
+
+hide footbox
+
+Participant "Browser" as Browser
+Participant "Application" as RelyingParty
+Participant "API" as API
+
+' -------------------
+' Use
+
+Browser -> RelyingParty
+
+RelyingParty -> API: ""GET /something""\n""Authorization: Bearer <font color=blue>access_token</font>""
+
+activate API
+API -[hidden]-> API
+API --> RelyingParty: Response
+deactivate API
+
+RelyingParty --> Browser
+
+@enduml

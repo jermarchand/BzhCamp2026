@@ -1,0 +1,18 @@
+= Conclusion
+
+DPoP fortifie OAuth2.
+
+C'est la nouvelle norme pour les applications hautement sécurisées.
+
+L'avenir de la sécurité des API vers le "Zéro Trust".
+
+== Merci
+
+Source : https://github.com/jermarchand/BzhCamp2026
+
+{empty} +
+{empty} +
+
+Openfeedback :
+
+image::zenika/openfeedback.png[height=300px]

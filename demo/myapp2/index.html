@@ -1,0 +1,125 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Keycloak Single-Page Application Example</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "keycloak-js": "/keycloak.js"
+        }
+      }
+    </script>
+    <link rel="modulepreload" href="/keycloak.js">
+</head>
+
+<body>
+    <div id="anonymous">
+        <button id="login" type="button">Login</button>
+    </div>
+    <div id="user" style="display: none;">
+        <button id="logout" type="button">Logout</button>
+        <button id="showMyAccount" type="button">My Account</button>
+        <button id="showIdToken" type="button">Show ID Token</button>
+        <button id="showAccessToken" type="button">Show Access Token</button>
+        <button id="refreshToken" type="button">Refresh</button>
+        <button id="dpopApi" type="button">API</button>
+        <hr>
+        <h2 id="name"></h2>
+        <pre id="output"></pre>
+    </div>
+    <script type="module">
+        import Keycloak from "keycloak-js";
+
+        const outputElement = document.getElementById("output");
+        const nameElement = document.getElementById("name");
+        const anonymousElement = document.getElementById("anonymous");
+        const userElement = document.getElementById("user");
+
+        function output(content) {
+            if (typeof content === "object") {
+                content = JSON.stringify(content, null, 2);
+            }
+
+            outputElement.textContent = content;
+        }
+
+        function showProfile() {
+            const name =
+                keycloak.idTokenParsed.name ||
+                keycloak.idTokenParsed.preferred_username;
+
+            nameElement.textContent = `Hello ${name}`;
+            anonymousElement.style.display = "none";
+            userElement.style.display = "block";
+        }
+
+        document.getElementById("login").addEventListener("click", () => {
+            keycloak.login();
+        });
+
+        document.getElementById("logout").addEventListener("click", () => {
+            keycloak.logout();
+            anonymousElement.style.display = "block";
+            userElement.style.display = "none";
+        });
+
+        document.getElementById("showIdToken").addEventListener("click", () => {
+            output(keycloak.idTokenParsed);
+        });
+
+        document
+            .getElementById("showAccessToken")
+            .addEventListener("click", () => {
+                output(keycloak.tokenParsed);
+            });
+
+        document
+            .getElementById("refreshToken")
+            .addEventListener("click", async () => {
+                await keycloak.updateToken(-1);
+                output(keycloak.refreshTokenParsed);
+                showProfile();
+            });
+
+        document
+            .getElementById("showMyAccount")
+            .addEventListener("click", async () => {
+                await keycloak.accountManagement()
+            });
+
+        document
+            .getElementById("dpopApi")
+            .addEventListener("click", async () => {
+                const url = "http://127.0.0.1:8000/api/ressource";
+
+                const response = await keycloak.secureFetch(
+                    url,
+                    {
+                        headers: {
+                            accept: 'application/json',
+                            authorization: `Bearer ${keycloak.token}`
+                        }
+                    }
+                );
+                const data = await response.json();
+                output(data);
+            });
+
+        const keycloak = new Keycloak({
+            url: "https://keycloak.zenika.lan",
+            realm: "bzhcamp",
+            clientId: "myapp2",
+        });
+
+        await keycloak.init({
+            useDPoP: {
+                mode: 'strict'
+            }
+        });
+        showProfile();
+    </script>
+</body>
+
+</html>

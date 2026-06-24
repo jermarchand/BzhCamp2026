@@ -1,0 +1,38 @@
+@startuml
+
+hide footbox
+
+Participant "Browser" as Browser
+Participant "Application" as RelyingParty
+Participant "OpenId Provider" as OpenIdProvider
+
+' -------------------
+' Auth
+
+Browser -> RelyingParty: ""GET /login""
+RelyingParty --> Browser: 302 redirect to auth
+
+Browser -> OpenIdProvider: \n\n\n""GET /auth? <font color=green>client_id=myapp</font> & <font color=orange>redirect_uri=https://myapp</font> & ...""
+activate OpenIdProvider
+OpenIdProvider -> OpenIdProvider: Check of <font color=orange>redirect_uri</font>
+Browser <--> OpenIdProvider: \t\t\t\t\tCredentials / 2FA / Passkey / SSO / ...
+OpenIdProvider --> Browser: \n\n302 to ""<font color=orange>redirect_uri</font>"" with ""<font color=blue>code=XXXXXX</font>""
+deactivate
+
+Browser -> RelyingParty:
+...
+
+' -------------------
+' Token 
+...
+alt "Public application"
+    RelyingParty -> OpenIdProvider: \n""POST /token & <font color=blue>code=XXXXXX</font> & <font color=green>client_id=myapp</font>""
+else "Confidential application"
+    RelyingParty -> OpenIdProvider: \n""POST /token & <font color=blue>code=XXXXXX</font> & <font color=green>client_id=myapp</font> & <font color=red>client_secret=secret</font>""
+end
+
+OpenIdProvider --> RelyingParty: \n\n""<&file>id_token""\n""<&file>access_token""\n""<&file>refresh_token""
+
+RelyingParty --> Browser: 
+
+@enduml
